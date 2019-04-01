@@ -4,11 +4,11 @@ import { GameCards, GameCard } from "./components/GameCards";
 import ScoreBoard from "./components/Score";
 import Banner from "./components/Banner";
 
-const initCardsState = [{ id: 0, img: "./img/mario.png", picked: false }, { id: 1, img: "./img/luigi.png", picked: false }, { id: 2, img: "./img/bowser.png", picked: false }, { id: 3, img: "./img/daisy.png", picked: false }, { id: 4, img: "./img/peach.png", picked: false }, { id: 5, img: "./img/rosalina.png", picked: false }, { id: 6, img: "./img/waluigi.png", picked: false }, { id: 7, img: "./img/wario.png", picked: false }, { id: 8, img: "./img/yoshi.png", picked: false }];
+const defaultCardState = [{ id: 0, img: "./img/mario.png", picked: false }, { id: 1, img: "./img/luigi.png", picked: false }, { id: 2, img: "./img/bowser.png", picked: false }, { id: 3, img: "./img/daisy.png", picked: false }, { id: 4, img: "./img/peach.png", picked: false }, { id: 5, img: "./img/rosalina.png", picked: false }, { id: 6, img: "./img/waluigi.png", picked: false }, { id: 7, img: "./img/wario.png", picked: false }, { id: 8, img: "./img/yoshi.png", picked: false }];
 
 class App extends Component {
   state = {
-    cards: initCardsState,
+    cards: [{ id: 0, img: "./img/mario.png", picked: false }, { id: 1, img: "./img/luigi.png", picked: false }, { id: 2, img: "./img/bowser.png", picked: false }, { id: 3, img: "./img/daisy.png", picked: false }, { id: 4, img: "./img/peach.png", picked: false }, { id: 5, img: "./img/rosalina.png", picked: false }, { id: 6, img: "./img/waluigi.png", picked: false }, { id: 7, img: "./img/wario.png", picked: false }, { id: 8, img: "./img/yoshi.png", picked: false }],
     score: 0,
     highScore: 0
   };
@@ -17,79 +17,102 @@ class App extends Component {
     this.shuffleCards();
   }
 
-  resetGame(){
-    console.log("will reset")
+  // resetGame(){
+  //   console.log("***********will reset**********")
 
-    let highScore = this.state.highscore;
-    if(this.state.score > highScore) highScore = this.state.score;
+  //   const restoreDefaultCards = JSON.parse(JSON.stringify(defaultCardState));
 
-    this.setState({score: 0});
-    this.setState({highScore: highScore});
-    this.setState({cards: initCardsState});
+  //   this.setState({score: 0,
+  //     cards: ["PLS CRASH"]
+  //   });
+  //   this.shuffleCards();
+  // }
+
+  resetGame() {
+    console.log("***********will reset**********")
+    const resetState = this.state.cards.slice();
+    resetState.forEach(c => {
+      c.picked = false;
+    })
+
+    this.setState({
+      score: 0,
+      cards: resetState
+    });
     this.shuffleCards();
   }
 
-  cardClicked(id){
+  cardClicked(id) {
     console.log("entered");
     const newScore = this.state.score + 1;
-    const highScore = newScore;
-    const updateCardState = this.state.cards;
+    let highScore = this.state.highScore;
+    if (newScore > highScore) {
+      highScore = newScore;
+    }
+    const updateCardState = this.state.cards.slice();
     updateCardState[id].picked = true;
-    this.setState({score: newScore});
-    this.setState({highScore: highScore});
-    // this.state.cards[id].picked = true;
-    this.setState({cards: updateCardState});
+    this.setState({
+      score: newScore,
+      highScore: highScore,
+      cards: updateCardState
+    });
+    console.log("-----original init cards----")
+    console.log(defaultCardState);
+    console.log("----------current cards---------")
+    console.log(this.state.cards);
     this.shuffleCards();
   }
 
-  handleOnClick(id){
+  handleOnClick(id) {
     // () => {this.state.cards[id].picked ?  this.cardClicked(id) : this.resetGame()};
     console.log(this.state.cards[id].picked);
-    if(!this.state.cards[id].picked){
+    if (!this.state.cards[id].picked) {
       this.cardClicked(id);
-    }else{
+    } else {
       this.resetGame();
     }
   }
 
   shuffleCards = () => {
-    let shuffledCardsState = this.state.cards;
-    
+    console.log("init shuffle")
+    console.log(this.state.cards);
+    let shuffledCardsState = this.state.cards.slice();
+
     for (var i = this.state.cards.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = shuffledCardsState[i];
-      
+      let j = Math.floor(Math.random() * (i + 1));
+      const temp = shuffledCardsState[i];
+
       shuffledCardsState[i] = shuffledCardsState[j];
       shuffledCardsState[j] = temp;
     }
 
-    this.setState({cards: shuffledCardsState});
-    for(const i in this.state.cards){
-      console.log("card"+i+this.state.cards[i].picked)
-    }
+    this.setState({ cards: shuffledCardsState });
+    // for(const i in this.state.cards){
+    //   console.log("card"+i+this.state.cards[i].picked)
+    // }
   };
 
   render() {
     return (
       <div className="main-container">
-        <Banner/>
+        <Banner />
         <ScoreBoard
           score={this.state.score}
           highscore={this.state.highScore}
         />
         <div className="game-container container valign center">
-        <GameCards>
-          {this.state.cards.map((card,i) => 
-            <GameCard
-                img = {card.img}
+          <GameCards>
+            {this.state.cards.map((card, i) =>
+              <GameCard
+                img={card.img}
                 onClick={this.handleOnClick.bind(this, i)}
-                key = {card.id}
-            />
-          )}
-        </GameCards>
-        <div className="row">
+                key={card.id}
+              />
+            )}
+          </GameCards>
+          <div className="row">
             <p>Try to select all the cards with out picking the same one twice!</p>
-        </div>
+          </div>
         </div>
       </div>
     );
