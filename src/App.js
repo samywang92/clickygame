@@ -9,21 +9,51 @@ const initCardsState = [{ id: 0, img: "./img/mario.png", picked: false }, { id: 
 class App extends Component {
   state = {
     cards: initCardsState,
-    score: "",
-    highScore: ""
+    score: 0,
+    highScore: 0
   };
 
   componentDidMount() {
     this.shuffleCards();
   }
 
-  handleOnClick(id){
-    console.log("entered here"+id);
+  resetGame(){
+    console.log("will reset")
+
+    let highScore = this.state.highscore;
+    if(this.state.score > highScore) highScore = this.state.score;
+
+    this.setState({score: 0});
+    this.setState({highScore: highScore});
+    this.setState({cards: initCardsState});
     this.shuffleCards();
   }
 
+  cardClicked(id){
+    console.log("entered");
+    const newScore = this.state.score + 1;
+    const highScore = newScore;
+    const updateCardState = this.state.cards;
+    updateCardState[id].picked = true;
+    this.setState({score: newScore});
+    this.setState({highScore: highScore});
+    // this.state.cards[id].picked = true;
+    this.setState({cards: updateCardState});
+    this.shuffleCards();
+  }
+
+  handleOnClick(id){
+    // () => {this.state.cards[id].picked ?  this.cardClicked(id) : this.resetGame()};
+    console.log(this.state.cards[id].picked);
+    if(!this.state.cards[id].picked){
+      this.cardClicked(id);
+    }else{
+      this.resetGame();
+    }
+  }
+
   shuffleCards = () => {
-    let shuffledCardsState = [].concat(initCardsState);
+    let shuffledCardsState = this.state.cards;
     
     for (var i = this.state.cards.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -34,6 +64,9 @@ class App extends Component {
     }
 
     this.setState({cards: shuffledCardsState});
+    for(const i in this.state.cards){
+      console.log("card"+i+this.state.cards[i].picked)
+    }
   };
 
   render() {
@@ -49,8 +82,8 @@ class App extends Component {
           {this.state.cards.map((card,i) => 
             <GameCard
                 img = {card.img}
-                onClick={this.handleOnClick.bind(this, card.id)}
-                key = {i}
+                onClick={this.handleOnClick.bind(this, i)}
+                key = {card.id}
             />
           )}
         </GameCards>
