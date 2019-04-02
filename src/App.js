@@ -17,29 +17,15 @@ class App extends Component {
     this.shuffleCards();
   }
 
-  // resetGame(){
-  //   console.log("***********will reset**********")
-
-  //   const restoreDefaultCards = JSON.parse(JSON.stringify(defaultCardState));
-
-  //   this.setState({score: 0,
-  //     cards: ["PLS CRASH"]
-  //   });
-  //   this.shuffleCards();
-  // }
-
-  resetGame() {
+  resetGame(){
     console.log("***********will reset**********")
-    const resetState = this.state.cards.slice();
-    resetState.forEach(c => {
-      c.picked = false;
-    })
 
-    this.setState({
-      score: 0,
-      cards: resetState
-    });
-    this.shuffleCards();
+    //deep copy rather than by reference
+    const restoreDefaultCards = JSON.parse(JSON.stringify(defaultCardState));
+
+    this.setState({score: 0,
+      cards: restoreDefaultCards
+    }, () => this.shuffleCards());
   }
 
   cardClicked(id) {
@@ -55,12 +41,7 @@ class App extends Component {
       score: newScore,
       highScore: highScore,
       cards: updateCardState
-    });
-    console.log("-----original init cards----")
-    console.log(defaultCardState);
-    console.log("----------current cards---------")
-    console.log(this.state.cards);
-    this.shuffleCards();
+    }, () => this.shuffleCards());
   }
 
   handleOnClick(id) {
@@ -73,6 +54,8 @@ class App extends Component {
     }
   }
 
+  //note to self, in future, create pure functions, shuffle cards should only shuffle cards
+  //create a setter function to set / change the state
   shuffleCards = () => {
     console.log("init shuffle")
     console.log(this.state.cards);
@@ -87,9 +70,6 @@ class App extends Component {
     }
 
     this.setState({ cards: shuffledCardsState });
-    // for(const i in this.state.cards){
-    //   console.log("card"+i+this.state.cards[i].picked)
-    // }
   };
 
   render() {
