@@ -22,7 +22,7 @@ code {
 .imgcards {
   max-width: 100%;
   height: 177px;
-  width: 178;
+  width: 178px;
   border: 5px solid red;
   border-radius: 5px;
   background: white;
@@ -65,4 +65,11 @@ p{
 
 #score{
   padding-right: 5em;
+}
+
+.card-holder{
+  display: inline-block;
+  height: 175px;
+  width: 175px;
+  border-radius: 5px;
 }
